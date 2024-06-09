@@ -9,12 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import top.alazeprt.ASpeedrunner;
 import top.alazeprt.util.GameThread;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class AdminCommand implements CommandExecutor {
     @Override
@@ -36,10 +33,13 @@ public class AdminCommand implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "There are not enough players online!");
             return true;
         }
-        Random random = new Random(1145141919810L);
+        Random random = new Random(new Random().nextInt());
         List<Player> hunters = new ArrayList<>();
         List<Player> runners = new ArrayList<>();
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        List<? extends Player> onlinePlayers = (List<? extends Player>)
+                Bukkit.getOnlinePlayers();
+        Collections.shuffle(onlinePlayers);
+        for(Player player : onlinePlayers) {
             if(random.nextBoolean() && runners.size() < runners_count) {
                 runners.add(player);
             } else if(hunters.size() < hunters_count) {

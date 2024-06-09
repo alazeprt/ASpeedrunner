@@ -34,12 +34,21 @@ public class GameThread {
         thread = new Thread(() -> {
             prepareHunters.addAll(hunters);
             for(Player player : hunters) {
-                Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class),
-                        () -> player.teleport(world.getSpawnLocation()));
+                Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
+                    player.teleport(world.getSpawnLocation());
+                    player.setHealth(20);
+                    player.setFoodLevel(20);
+                    player.getInventory().clear();
+                    player.setGameMode(GameMode.ADVENTURE);
+                });
             }
             for(Player player : runners) {
                 Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
                     player.teleport(world.getSpawnLocation());
+                    player.setHealth(20);
+                    player.setFoodLevel(20);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.getInventory().clear();
                     player.sendTitle(ChatColor.YELLOW + "Leave there!", ChatColor.YELLOW + "You have " + delay + " seconds to leave!");
                 });
             }
@@ -50,14 +59,10 @@ public class GameThread {
             }
             Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
                 for (Player player : runners) {
-                    player.setGameMode(GameMode.ADVENTURE);
                     player.sendTitle(ChatColor.GREEN + "Start!", ChatColor.RED + "Hunters are coming!");
-                    player.setHealth(20);
                 }
                 for (Player player : hunters) {
-                    player.setGameMode(GameMode.ADVENTURE);
                     player.sendTitle(ChatColor.GREEN + "Start!", ChatColor.YELLOW + "To catch the runner!");
-                    player.setHealth(20);
                     player.getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD));
                 }
                 world.setGameRule(GameRule.KEEP_INVENTORY, true);
