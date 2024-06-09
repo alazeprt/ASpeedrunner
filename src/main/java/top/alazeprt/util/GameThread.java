@@ -1,0 +1,106 @@
+package top.alazeprt.util;
+
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import top.alazeprt.ASpeedrunner;
+import top.alazeprt.event.RunnerEvent;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class GameThread {
+
+    public static List<Player> playingRunners = new ArrayList<>();
+
+    public static List<Player> prepareHunters = new ArrayList<>();
+
+    public static List<Player> hunters = new ArrayList<>();
+
+    public static List<Player> runners = new ArrayList<>();
+
+    public static Thread thread;
+
+    public static double runTime;
+
+    public static boolean running = false;
+
+    public static void start(List<Player> hunters, List<Player> runners, World world, long time, long delay) {
+        running = true;
+        RunnerEvent.needReset = false;
+        GameThread.runners = runners;
+        GameThread.hunters = hunters;
+        thread = new Thread(() -> {
+            prepareHunters.addAll(hunters);
+            for(Player player : hunters) {
+                Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class),
+                        () -> player.teleport(world.getSpawnLocation()));
+            }
+            for(Player player : runners) {
+                Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
+                    player.teleport(world.getSpawnLocation());
+                    player.sendTitle(ChatColor.YELLOW + "Leave there!", ChatColor.YELLOW + "You have " + delay + " seconds to leave!");
+                });
+            }
+            try {
+                Thread.sleep(delay * 1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
+                for (Player player : runners) {
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.sendTitle(ChatColor.GREEN + "Start!", ChatColor.RED + "Hunters are coming!");
+                    player.setHealth(20);
+                }
+                for (Player player : hunters) {
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.sendTitle(ChatColor.GREEN + "Start!", ChatColor.YELLOW + "To catch the runner!");
+                    player.setHealth(20);
+                    player.getInventory().setItem(0, new ItemStack(Material.DIAMOND_SWORD));
+                }
+                world.setGameRule(GameRule.KEEP_INVENTORY, true);
+                world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                world.setGameRule(GameRule.DO_MOB_LOOT, false);
+                world.setFullTime(0);
+            });
+            prepareHunters.clear();
+            playingRunners.addAll(runners);
+            long startTime = System.currentTimeMillis();
+            while(runTime < time) {
+                runTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+            if(Thread.currentThread().isInterrupted()) return;
+            RunnerEvent.needReset = true;
+            Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
+                for(Player player : runners) {
+                    player.sendTitle(ChatColor.AQUA + "End!", null);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.teleport(world.getSpawnLocation());
+                }
+                for(Player player : hunters) {
+                    player.sendTitle(ChatColor.AQUA + "End!", null);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.teleport(world.getSpawnLocation());
+                }
+                playingRunners.forEach(player -> {
+                    Bukkit.broadcastMessage(player.getName() + " lived for " + time + " seconds");
+                });
+                playingRunners.clear();
+                runners.clear();
+                hunters.clear();
+                runTime = 0;
+                running = false;
+                thread.interrupt();
+                thread = null;
+            });
+        });
+        thread.start();
+    }
+}

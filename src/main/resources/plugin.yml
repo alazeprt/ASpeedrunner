@@ -1,0 +1,8 @@
+name: ASpeedrunner
+main: top.alazeprt.ASpeedrunner
+version: 1.0
+api-version: 1.20.6
+author: alazeprt
+commands:
+  speedrunner:
+    description: Main Command
