@@ -47,10 +47,10 @@ public class AdminCommand implements CommandExecutor {
     private static List<List<Player>> getRandomSubLists(List<Player> originalList, int x, int y) {
         Random random = new Random(new Random().nextInt());
         
-        List<String> list1 = new ArrayList<>();
-        List<String> list2 = new ArrayList<>();
+        List<Player> list1 = new ArrayList<>();
+        List<Player> list2 = new ArrayList<>();
 
-        List<String> tempList = new ArrayList<>(originalList);
+        List<Player> tempList = new ArrayList<>(originalList);
 
         for (int i = 0; i < x; i++) {
             int randomIndex = random.nextInt(tempList.size());
@@ -64,7 +64,7 @@ public class AdminCommand implements CommandExecutor {
             tempList.remove(randomIndex);
         }
 
-        List<List<String>> result = new ArrayList<>();
+        List<List<Player>> result = new ArrayList<>();
         result.add(list1);
         result.add(list2);
 
