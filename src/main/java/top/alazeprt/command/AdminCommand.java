@@ -37,14 +37,14 @@ public class AdminCommand implements CommandExecutor {
         for(Player player : Bukkit.getOnlinePlayers()) {
             onlinePlayers.add(player);
         }
-        List<List<String>> result = getRandomSubLists(onlinePlayers, hunters_count, runners_count);
+        List<List<Player>> result = getRandomSubLists(onlinePlayers, hunters_count, runners_count);
         List<Player> hunters = result.get(0);
         List<Player> runners = result.get(1);
         GameThread.start(hunters, runners, world, time, delay);
         return false;
     }
 
-    private static List<List<String>> getRandomSubLists(List<String> originalList, int x, int y) {
+    private static List<List<Player>> getRandomSubLists(List<Player> originalList, int x, int y) {
         Random random = new Random(new Random().nextInt());
         
         List<String> list1 = new ArrayList<>();
