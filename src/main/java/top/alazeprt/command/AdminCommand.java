@@ -33,24 +33,41 @@ public class AdminCommand implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "There are not enough players online!");
             return true;
         }
-        Random random = new Random(new Random().nextInt());
-        List<Player> hunters = new ArrayList<>();
-        List<Player> runners = new ArrayList<>();
         List<Player> onlinePlayers = new ArrayList<>();
         for(Player player : Bukkit.getOnlinePlayers()) {
             onlinePlayers.add(player);
         }
-        Collections.shuffle(onlinePlayers);
-        for(Player player : onlinePlayers) {
-            if(random.nextBoolean() && runners.size() < runners_count) {
-                runners.add(player);
-                Bukkit.broadcastMessage("Runner: " + player.getName());
-            } else if(hunters.size() < hunters_count) {
-                hunters.add(player);
-                Bukkit.broadcastMessage("Hunner: " + player.getName());
-            }
-        }
+        List<List<String>> result = getRandomSubLists(onlinePlayers, hunters_count, runners_count);
+        List<Player> hunters = result.get(0);
+        List<Player> runners = result.get(1);
         GameThread.start(hunters, runners, world, time, delay);
         return false;
+    }
+
+    private static List<List<String>> getRandomSubLists(List<String> originalList, int x, int y) {
+        Random random = new Random(new Random().nextInt());
+        
+        List<String> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
+
+        List<String> tempList = new ArrayList<>(originalList);
+
+        for (int i = 0; i < x; i++) {
+            int randomIndex = random.nextInt(tempList.size());
+            list1.add(tempList.get(randomIndex));
+            tempList.remove(randomIndex)
+        }
+
+        for (int i = 0; i < y; i++) {
+            int randomIndex = random.nextInt(tempList.size());
+            list2.add(tempList.get(randomIndex));
+            tempList.remove(randomIndex)
+        }
+
+        List<List<String>> result = new ArrayList<>();
+        result.add(list1);
+        result.add(list2);
+
+        return result;
     }
 }
