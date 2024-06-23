@@ -55,13 +55,13 @@ public class AdminCommand implements CommandExecutor {
         for (int i = 0; i < x; i++) {
             int randomIndex = random.nextInt(tempList.size());
             list1.add(tempList.get(randomIndex));
-            tempList.remove(randomIndex)
+            tempList.remove(randomIndex);
         }
 
         for (int i = 0; i < y; i++) {
             int randomIndex = random.nextInt(tempList.size());
             list2.add(tempList.get(randomIndex));
-            tempList.remove(randomIndex)
+            tempList.remove(randomIndex);
         }
 
         List<List<String>> result = new ArrayList<>();
