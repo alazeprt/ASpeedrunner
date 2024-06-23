@@ -36,8 +36,10 @@ public class AdminCommand implements CommandExecutor {
         Random random = new Random(new Random().nextInt());
         List<Player> hunters = new ArrayList<>();
         List<Player> runners = new ArrayList<>();
-        List<? extends Player> onlinePlayers = (List<? extends Player>)
-                Bukkit.getOnlinePlayers();
+        List<Player> onlinePlayers = new ArrayList<>();
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            onlinePlayers.add(player);
+        }
         Collections.shuffle(onlinePlayers);
         for(Player player : onlinePlayers) {
             if(random.nextBoolean() && runners.size() < runners_count) {
