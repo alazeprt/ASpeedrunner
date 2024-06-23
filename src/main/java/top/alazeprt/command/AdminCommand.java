@@ -44,8 +44,10 @@ public class AdminCommand implements CommandExecutor {
         for(Player player : onlinePlayers) {
             if(random.nextBoolean() && runners.size() < runners_count) {
                 runners.add(player);
+                Bukkit.broadcastMessage("Runner: " + player.getName());
             } else if(hunters.size() < hunters_count) {
                 hunters.add(player);
+                Bukkit.broadcastMessage("Hunner: " + player.getName());
             }
         }
         GameThread.start(hunters, runners, world, time, delay);
