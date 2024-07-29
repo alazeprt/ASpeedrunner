@@ -24,7 +24,8 @@ public class AdminCommand implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "Usage: /speedrunner start <hunters> <runners> <time> <delay> <world>");
             return true;
         }
-        int hunters_count = Integer.parseInt(strings[1]);
+        String[] hunterString = strings[1].split(";");
+        int hunters_count = hunterString.length;
         int runners_count = Integer.parseInt(strings[2]);
         long time = Long.parseLong(strings[3]);
         long delay = Long.parseLong(strings[4]);
@@ -37,11 +38,29 @@ public class AdminCommand implements CommandExecutor {
         for(Player player : Bukkit.getOnlinePlayers()) {
             onlinePlayers.add(player);
         }
-        List<List<Player>> result = getRandomSubLists(onlinePlayers, hunters_count, runners_count);
-        List<Player> hunters = result.get(0);
-        List<Player> runners = result.get(1);
+        List<Player> hunters = new ArrayList<>();
+        for(String hunter : hunterString) {
+            hunters.add(Bukkit.getPlayer(hunter));
+        }
+        List<Player> runners = getRandomSubList(onlinePlayers, runners_count, hunters);
         GameThread.start(hunters, runners, world, time, delay);
         return false;
+    }
+
+    private static List<Player> getRandomSubList(List<Player> originalList, int x, List<Player> ignored) {
+        Random random = new Random(new Random().nextInt());
+        List<Player> tempList = new ArrayList<>(originalList);
+        for(Player player : ignored) {
+            tempList.remove(player);
+        }
+        List<Player> newList = new ArrayList<>();
+        for(int i = 0; i < x; i++) {
+            int randomIndex = random.nextInt(tempList.size());
+            newList.add(tempList.get(randomIndex));
+            tempList.remove(randomIndex);
+        }
+
+        return newList;
     }
 
     private static List<List<Player>> getRandomSubLists(List<Player> originalList, int x, int y) {
