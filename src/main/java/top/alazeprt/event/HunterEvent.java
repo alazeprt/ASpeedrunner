@@ -31,7 +31,6 @@ public class HunterEvent implements Listener {
             Bukkit.getScheduler().runTaskLaterAsynchronously(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
                 Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
                     event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false));
-                    event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1, false));
                 });
             }, 2L);
             event.getPlayer().getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 64));

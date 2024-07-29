@@ -53,7 +53,6 @@ public class GameThread {
                     player.getInventory().clear();
                     player.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 16));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1, false));
                     player.sendTitle(ChatColor.RED + "You are hunter", ChatColor.YELLOW + "You can start to catch the runner in " + delay + " seconds!");
                 });
             }
