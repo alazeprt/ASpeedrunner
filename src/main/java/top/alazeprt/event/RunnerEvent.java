@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import top.alazeprt.ASpeedrunner;
 import top.alazeprt.util.GameThread;
@@ -33,7 +34,6 @@ public class RunnerEvent implements Listener {
         if(GameThread.playingRunners.isEmpty()) {
             needReset = true;
             Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
-                Bukkit.broadcastMessage(GameThread.runners.size() + " " + GameThread.hunters.size());
                 for(Player player : GameThread.runners) {
                     player.sendTitle(ChatColor.AQUA + "End!", "");
                     player.setGameMode(GameMode.ADVENTURE);
@@ -70,5 +70,12 @@ public class RunnerEvent implements Listener {
         if(!waitRespawnPlayers.contains(event.getPlayer())) return;
         waitRespawnPlayers.remove(event.getPlayer());
         event.getPlayer().setGameMode(GameMode.SPECTATOR);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if (!GameThread.playingRunners.contains(event.getPlayer())) {
+            event.getPlayer().setGameMode(GameMode.SPECTATOR);
+        }
     }
 }

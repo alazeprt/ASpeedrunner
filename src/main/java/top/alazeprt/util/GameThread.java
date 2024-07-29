@@ -3,6 +3,8 @@ package top.alazeprt.util;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import top.alazeprt.ASpeedrunner;
 import top.alazeprt.event.RunnerEvent;
 
@@ -32,14 +34,27 @@ public class GameThread {
         GameThread.runners = runners;
         GameThread.hunters = hunters;
         thread = new Thread(() -> {
+            Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
+                world.setTime(0L);
+                world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+                world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+                world.setGameRule(GameRule.KEEP_INVENTORY, true);
+                world.setClearWeatherDuration(114514);
+                world.setDifficulty(Difficulty.NORMAL);
+                world.getWorldBorder().setSize(240.0);
+            });
             prepareHunters.addAll(hunters);
             for(Player player : hunters) {
                 Bukkit.getScheduler().runTask(ASpeedrunner.getProvidingPlugin(ASpeedrunner.class), () -> {
                     player.teleport(world.getSpawnLocation());
                     player.setHealth(20);
                     player.setFoodLevel(20);
-                    player.getInventory().clear();
                     player.setGameMode(GameMode.ADVENTURE);
+                    player.getInventory().clear();
+                    player.getInventory().setItem(1, new ItemStack(Material.COOKED_BEEF, 16));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1, false));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1, false));
+                    player.sendTitle(ChatColor.RED + "You are hunter", ChatColor.YELLOW + "You can start to catch the runner in " + delay + " seconds!");
                 });
             }
             for(Player player : runners) {
@@ -49,6 +64,8 @@ public class GameThread {
                     player.setFoodLevel(20);
                     player.setGameMode(GameMode.ADVENTURE);
                     player.getInventory().clear();
+                    player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 1, false));
                     player.sendTitle(ChatColor.YELLOW + "Leave there!", ChatColor.YELLOW + "You have " + delay + " seconds to leave!");
                 });
             }
@@ -94,9 +111,7 @@ public class GameThread {
                     player.setGameMode(GameMode.ADVENTURE);
                     player.teleport(world.getSpawnLocation());
                 }
-                playingRunners.forEach(player -> {
-                    Bukkit.broadcastMessage(player.getName() + " lived for " + time + " seconds");
-                });
+                playingRunners.forEach(player -> Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " lived for " + time + " seconds"));
                 playingRunners.clear();
                 runners.clear();
                 hunters.clear();
